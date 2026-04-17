@@ -1,0 +1,8 @@
+**/bin/
+**/obj/
+**/node_modules/
+**/.git/
+*.db
+certs/*.pem
+certs/*.p12
+Voltei.Api/appsettings.Local.json

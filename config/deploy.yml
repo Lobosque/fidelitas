@@ -1,0 +1,39 @@
+service: voltei
+
+image: ghcr.io/lobosque/fidelitas
+
+servers:
+  web:
+    hosts:
+      - <%= ENV['KAMAL_HOST'] %>
+    proxy:
+      ssl: true
+      host: staging.voltei.velvet.dev.br
+      app_port: 3000
+
+registry:
+  server: ghcr.io
+  username: lobosque
+  password:
+    - KAMAL_REGISTRY_PASSWORD
+
+builder:
+  arch: amd64
+  context: .
+  dockerfile: Dockerfile
+
+env:
+  clear:
+    ASPNETCORE_ENVIRONMENT: Production
+    ASPNETCORE_URLS: http://+:3000
+  secret:
+    - DATABASE_URL
+    - JWT_SECRET
+    - GOOGLE_WALLET_ISSUER_ID
+    - GOOGLE_WALLET_SA_EMAIL
+    - GOOGLE_WALLET_SA_KEY
+    - APPLE_WALLET_PASS_TYPE_ID
+    - APPLE_WALLET_TEAM_ID
+
+ssh:
+  user: voltei

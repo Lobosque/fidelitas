@@ -1,0 +1,3 @@
+# Copiar para terraform.tfvars e preencher
+pg_admin_password   = "SUA_SENHA_SEGURA_AQUI"
+ssh_public_key_path = "~/.ssh/id_rsa.pub"

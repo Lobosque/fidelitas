@@ -34,3 +34,18 @@ Thumbs.db
 
 # Local Vite files
 *.local
+
+# Terraform
+infra/.terraform/
+infra/*.tfstate
+infra/*.tfstate.backup
+infra/*.tfvars
+!infra/*.tfvars.example
+infra/.terraform.lock.hcl
+
+# Kamal secrets
+.kamal/secrets
+
+# .NET build artifacts
+**/bin/
+**/obj/

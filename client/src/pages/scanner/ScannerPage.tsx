@@ -6,18 +6,9 @@ import type { CheckinResponse } from '../../types'
 type ScannerState =
   | { phase: 'scanning' }
   | { phase: 'looking-up' }
-  | { phase: 'confirming'; token: string; preview: CheckinPreview }
   | { phase: 'loading' }
   | { phase: 'success'; checkin: CheckinResponse }
   | { phase: 'error'; message: string }
-
-interface CheckinPreview {
-  clienteNome: string
-  campanhaNome: string
-  campanhaDescricao: string
-  checkinsAtuais: number
-  checkinsNecessarios: number
-}
 
 export function ScannerPage() {
   const [state, setState] = useState<ScannerState>({ phase: 'scanning' })

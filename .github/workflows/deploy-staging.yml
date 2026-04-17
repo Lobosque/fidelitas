@@ -1,0 +1,85 @@
+name: Deploy Staging
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE: ghcr.io/lobosque/fidelitas
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: voltei
+          POSTGRES_PASSWORD: voltei-test
+          POSTGRES_DB: voltei_test
+        ports:
+          - 5434:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+          dotnet-quality: 'preview'
+
+      - name: Test
+        working-directory: server
+        run: dotnet test
+
+  deploy:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+    needs: test
+    permissions:
+      contents: read
+      packages: write
+    env:
+      KAMAL_HOST: ${{ secrets.KAMAL_HOST }}
+      KAMAL_REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      GOOGLE_WALLET_ISSUER_ID: ${{ secrets.GOOGLE_WALLET_ISSUER_ID }}
+      GOOGLE_WALLET_SA_EMAIL: ${{ secrets.GOOGLE_WALLET_SA_EMAIL }}
+      GOOGLE_WALLET_SA_KEY: ${{ secrets.GOOGLE_WALLET_SA_KEY }}
+      APPLE_WALLET_PASS_TYPE_ID: ${{ secrets.APPLE_WALLET_PASS_TYPE_ID }}
+      APPLE_WALLET_TEAM_ID: ${{ secrets.APPLE_WALLET_TEAM_ID }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.KAMAL_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.KAMAL_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
+
+      - name: Deploy with Kamal
+        run: |
+          docker run --rm \
+            -v "$PWD:/workdir" \
+            -v "$HOME/.ssh:/root/.ssh" \
+            -e KAMAL_HOST \
+            -e KAMAL_REGISTRY_PASSWORD \
+            -e DATABASE_URL \
+            -e JWT_SECRET \
+            -e GOOGLE_WALLET_ISSUER_ID \
+            -e GOOGLE_WALLET_SA_EMAIL \
+            -e GOOGLE_WALLET_SA_KEY \
+            -e APPLE_WALLET_PASS_TYPE_ID \
+            -e APPLE_WALLET_TEAM_ID \
+            -w /workdir \
+            ghcr.io/basecamp/kamal:latest deploy

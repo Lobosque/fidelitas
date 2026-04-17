@@ -1,0 +1,15 @@
+**/bin/
+**/obj/
+**/node_modules/
+.git/
+.github/
+infra/
+tickets/
+docs/
+tailwind_ui/
+*.db
+server/certs/*.pem
+server/certs/*.p12
+server/Voltei.Api/appsettings.Local.json
+.kamal/secrets
+terraform.tfstate*
