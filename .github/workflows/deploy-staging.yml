@@ -72,18 +72,10 @@ jobs:
       - name: Write Kamal secrets
         run: |
           mkdir -p .kamal
-          cat > .kamal/secrets <<EOF
-          KAMAL_HOST=$KAMAL_HOST
-          KAMAL_REGISTRY_PASSWORD=$KAMAL_REGISTRY_PASSWORD
-          DATABASE_URL=$DATABASE_URL
-          JWT_SECRET=$JWT_SECRET
-          GOOGLE_WALLET_ISSUER_ID=$GOOGLE_WALLET_ISSUER_ID
-          GOOGLE_WALLET_SA_EMAIL=$GOOGLE_WALLET_SA_EMAIL
-          GOOGLE_WALLET_SA_KEY=$GOOGLE_WALLET_SA_KEY
-          APPLE_WALLET_PASS_TYPE_ID=$APPLE_WALLET_PASS_TYPE_ID
-          APPLE_WALLET_TEAM_ID=$APPLE_WALLET_TEAM_ID
-          EOF
-          sed -i 's/^          //' .kamal/secrets
+          printf "KAMAL_HOST=%s\nKAMAL_REGISTRY_PASSWORD=%s\nDATABASE_URL=%s\nJWT_SECRET=%s\nGOOGLE_WALLET_ISSUER_ID=%s\nGOOGLE_WALLET_SA_EMAIL=%s\nGOOGLE_WALLET_SA_KEY=%s\nAPPLE_WALLET_PASS_TYPE_ID=%s\nAPPLE_WALLET_TEAM_ID=%s\n" \
+            "$KAMAL_HOST" "$KAMAL_REGISTRY_PASSWORD" "$DATABASE_URL" "$JWT_SECRET" \
+            "$GOOGLE_WALLET_ISSUER_ID" "$GOOGLE_WALLET_SA_EMAIL" "$GOOGLE_WALLET_SA_KEY" \
+            "$APPLE_WALLET_PASS_TYPE_ID" "$APPLE_WALLET_TEAM_ID" > .kamal/secrets
 
       - name: Deploy with Kamal
         run: |
