@@ -5,7 +5,7 @@ image: ghcr.io/lobosque/fidelitas
 servers:
   web:
     hosts:
-      - <%= ENV['KAMAL_HOST'] %>
+      - 20.1.176.90
     proxy:
       ssl: true
       host: staging.voltei.velvet.dev.br
