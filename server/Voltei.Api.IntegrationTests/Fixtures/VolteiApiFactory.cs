@@ -9,8 +9,9 @@ namespace Voltei.Api.IntegrationTests.Fixtures;
 
 public class VolteiApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 {
-    private const string BaseConnectionString =
-        "Host=localhost;Port=5434;Username=voltei;Password=voltei-dev";
+    private static readonly string BaseConnectionString =
+        Environment.GetEnvironmentVariable("TEST_DB_CONNECTION")
+        ?? "Host=localhost;Port=5434;Username=voltei;Password=voltei-dev";
 
     private readonly string _dbName = $"voltei_test_{Guid.NewGuid():N}"[..40];
 

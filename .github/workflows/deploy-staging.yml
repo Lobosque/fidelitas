@@ -39,6 +39,8 @@ jobs:
       - name: Test
         working-directory: server
         run: dotnet test
+        env:
+          TEST_DB_CONNECTION: "Host=localhost;Port=5434;Username=voltei;Password=voltei-test"
 
   deploy:
     name: Build & Deploy
