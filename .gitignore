@@ -13,6 +13,9 @@ dist/
 *.pem
 *.p12
 *.json.key
+appsettings.Local.json
+server/certs/*.pem
+server/certs/*.p12
 
 # OS
 .DS_Store

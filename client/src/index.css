@@ -4,3 +4,19 @@
   --color-primary: #4f46e5;
   --color-secondary: #818cf8;
 }
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  #totem-print-area,
+  #totem-print-area * {
+    visibility: visible;
+  }
+  #totem-print-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}

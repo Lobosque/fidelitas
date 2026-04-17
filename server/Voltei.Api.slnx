@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="Voltei.Api/Voltei.Api.csproj" />
+  <Project Path="Voltei.Api.UnitTests/Voltei.Api.UnitTests.csproj" />
+  <Project Path="Voltei.Api.IntegrationTests/Voltei.Api.IntegrationTests.csproj" />
+</Solution>

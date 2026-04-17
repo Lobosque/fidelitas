@@ -26,9 +26,11 @@ export default function App() {
               <Route path="/c/:campaignId/success" element={<ConfirmationPage />} />
             </Route>
 
+            {/* Onboarding — standalone, sem navbar */}
+            <Route path="/onboarding" element={<OnboardingWizardPage />} />
+
             {/* Rotas autenticadas */}
             <Route element={<AppShell />}>
-              <Route path="/onboarding" element={<OnboardingWizardPage />} />
               <Route path="/dashboard" element={<DashboardPage />} />
               <Route path="/scanner" element={<ScannerPage />} />
             </Route>

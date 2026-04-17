@@ -53,3 +53,33 @@ export interface AuthUser {
   email: string
   negocioId: string
 }
+
+export interface CampaignPublicInfo {
+  id: string
+  nome: string
+  descricao: string
+  checkinsNecessarios: number
+  negocioNome: string
+  logoUrl: string | null
+  coresPrimaria: string
+  coresSecundaria: string
+}
+
+export interface EnrollResponse {
+  enrollmentId: string
+  googleWalletSaveUrl: string | null
+  applePassUrl: string | null
+  checkinsAtuais: number
+  checkinsNecessarios: number
+  alreadyEnrolled: boolean
+}
+
+export interface CheckinResponse {
+  enrollmentId: string
+  clienteNome: string
+  campanhaNome: string
+  campanhaDescricao: string
+  checkinsAtuais: number
+  checkinsNecessarios: number
+  rewardReached: boolean
+}
