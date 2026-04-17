@@ -19,8 +19,8 @@ public class VolteiApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        // Criar database de teste isolado
-        await using var conn = new NpgsqlConnection($"{BaseConnectionString};Database=voltei");
+        // Criar database de teste isolado (conecta em 'postgres' que sempre existe)
+        await using var conn = new NpgsqlConnection($"{BaseConnectionString};Database=postgres");
         await conn.OpenAsync();
         await using var cmd = conn.CreateCommand();
         cmd.CommandText = $"CREATE DATABASE \"{_dbName}\"";
@@ -34,7 +34,7 @@ public class VolteiApiFactory : WebApplicationFactory<Program>, IAsyncLifetime
         // Dropar database de teste
         try
         {
-            await using var conn = new NpgsqlConnection($"{BaseConnectionString};Database=voltei");
+            await using var conn = new NpgsqlConnection($"{BaseConnectionString};Database=postgres");
             await conn.OpenAsync();
 
             // Forçar desconexão de qualquer sessão ativa
