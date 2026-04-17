@@ -1,6 +1,6 @@
 service: voltei
 
-image: ghcr.io/lobosque/fidelitas
+image: lobosque/fidelitas
 
 servers:
   web:

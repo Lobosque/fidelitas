@@ -19,6 +19,7 @@ RUN dotnet publish Voltei.Api/Voltei.Api.csproj -c Release -o /app --no-restore
 
 # Stage 3: Runtime
 FROM mcr.microsoft.com/dotnet/aspnet:10.0-preview AS runtime
+LABEL service="voltei"
 WORKDIR /app
 COPY --from=api-build /app .
 COPY --from=frontend-build /app/client/dist ./wwwroot
