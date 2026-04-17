@@ -92,7 +92,7 @@ jobs:
           ssh-keyscan -H 20.1.176.90 >> ~/.ssh/known_hosts 2>/dev/null || true
 
       - name: Install Kamal
-        run: gem install kamal
+        run: sudo gem install kamal
 
       - name: Write secrets
         run: |
