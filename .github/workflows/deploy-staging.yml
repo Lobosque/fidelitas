@@ -89,7 +89,8 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.KAMAL_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H 20.1.176.90 >> ~/.ssh/known_hosts 2>/dev/null || true
+          ssh-keyscan -t ed25519,rsa,ecdsa -H 20.1.176.90 >> ~/.ssh/known_hosts 2>/dev/null
+          ssh-keyscan -t ed25519,rsa,ecdsa 20.1.176.90 >> ~/.ssh/known_hosts 2>/dev/null
 
       - name: Install Kamal
         run: sudo gem install kamal
