@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuth } from '../../contexts/AuthContext'
 import { api } from '../../lib/api'
-import type { Campaign } from '../../types'
+import { TotemPreview } from '../../components/onboarding/TotemPreview'
+import type { Campaign, CampaignPublicInfo } from '../../types'
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('pt-BR', {
@@ -18,6 +19,8 @@ export function DashboardPage() {
 
   const [campaigns, setCampaigns] = useState<Campaign[]>([])
   const [loading, setLoading] = useState(true)
+  const [totemCampaign, setTotemCampaign] = useState<CampaignPublicInfo | null>(null)
+  const [loadingTotem, setLoadingTotem] = useState(false)
 
   useEffect(() => {
     api<Campaign[]>('/campaigns')
@@ -25,6 +28,18 @@ export function DashboardPage() {
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [])
+
+  async function handleViewTotem(campaignId: string) {
+    setLoadingTotem(true)
+    try {
+      const info = await api<CampaignPublicInfo>(`/enroll/${campaignId}`)
+      setTotemCampaign(info)
+    } catch {
+      // silently ignore
+    } finally {
+      setLoadingTotem(false)
+    }
+  }
 
   if (loading) {
     return (
@@ -132,7 +147,9 @@ export function DashboardPage() {
             <div className="flex flex-none items-center gap-x-4">
               <button
                 type="button"
-                className="hidden cursor-pointer rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-xs inset-ring inset-ring-gray-300 hover:bg-gray-50 sm:block"
+                onClick={() => handleViewTotem(campaign.id)}
+                disabled={loadingTotem}
+                className="cursor-pointer rounded-md bg-white px-2.5 py-1.5 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-50"
               >
                 Ver totem
               </button>
@@ -140,6 +157,48 @@ export function DashboardPage() {
           </li>
         ))}
       </ul>
+
+      {/* Totem modal */}
+      {totemCampaign && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          onClick={() => setTotemCampaign(null)}
+        >
+          <div
+            className="relative max-w-sm rounded-2xl bg-white p-6 shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              onClick={() => setTotemCampaign(null)}
+              className="absolute right-3 top-3 cursor-pointer rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+              aria-label="Fechar"
+            >
+              <svg className="size-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+              </svg>
+            </button>
+            <TotemPreview
+              campaignId={totemCampaign.id}
+              nomeNegocio={totemCampaign.negocioNome}
+              nomeCampanha={totemCampaign.nome}
+              descricaoPremio={totemCampaign.descricao}
+              checkinsNecessarios={totemCampaign.checkinsNecessarios}
+              corPrimaria={totemCampaign.coresPrimaria}
+              logoUrl={totemCampaign.logoUrl}
+            />
+            <div className="mt-4 flex justify-center">
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className="cursor-pointer rounded-md bg-primary px-4 py-2 text-sm font-semibold text-white shadow-xs hover:bg-secondary"
+              >
+                Imprimir totem
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
