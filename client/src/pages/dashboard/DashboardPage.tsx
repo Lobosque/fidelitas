@@ -171,7 +171,7 @@ export function DashboardPage() {
             <button
               type="button"
               onClick={() => setTotemCampaign(null)}
-              className="absolute right-3 top-3 cursor-pointer rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+              className="absolute -right-3 -top-3 cursor-pointer rounded-full bg-white p-1.5 text-gray-500 shadow-md ring-1 ring-gray-200 hover:text-gray-900"
               aria-label="Fechar"
             >
               <svg className="size-5" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
