@@ -15,6 +15,7 @@ public class AppleWalletService
     private readonly AppleWalletOptions _options;
     private readonly ILogger<AppleWalletService> _logger;
     private readonly X509Certificate2? _certificate;
+    private readonly string _assetsPath;
 
     public bool IsConfigured => _certificate != null
                                 && !string.IsNullOrEmpty(_options.PassTypeIdentifier)
@@ -27,6 +28,7 @@ public class AppleWalletService
     {
         _options = options.Value;
         _logger = logger;
+        _assetsPath = Path.Combine(env.ContentRootPath, "assets", "apple-pass");
 
         // Resolver caminho relativo ao content root
         var certPath = _options.CertificatePath;
@@ -76,10 +78,10 @@ public class AppleWalletService
             var files = new Dictionary<string, byte[]>
             {
                 ["pass.json"] = Encoding.UTF8.GetBytes(passJson),
-                ["icon.png"] = GeneratePlaceholderIcon(1),
-                ["icon@2x.png"] = GeneratePlaceholderIcon(2),
-                ["logo.png"] = GeneratePlaceholderIcon(1),
-                ["logo@2x.png"] = GeneratePlaceholderIcon(2),
+                ["icon.png"] = LoadAsset("icon.png"),
+                ["icon@2x.png"] = LoadAsset("icon@2x.png"),
+                ["logo.png"] = LoadAsset("logo.png"),
+                ["logo@2x.png"] = LoadAsset("logo@2x.png"),
             };
 
             // Gerar manifest.json (SHA256 de cada arquivo)
@@ -124,7 +126,7 @@ public class AppleWalletService
             organizationName = business.Nome,
             description = $"Cartão fidelidade — {business.Nome}",
             foregroundColor = fgColor,
-            backgroundColor = business.CoresPrimaria,
+            backgroundColor = HexToRgb(business.CoresPrimaria),
             labelColor = fgColor,
             storeCard = new
             {
@@ -203,7 +205,8 @@ public class AppleWalletService
     {
         var content = new ContentInfo(manifestBytes);
         var signedCms = new SignedCms(content, detached: true);
-        var signer = new CmsSigner(SubjectIdentifierType.SubjectKeyIdentifier, _certificate!)
+        // Apple PassKit exige IssuerAndSerialNumber como SignerIdentifier
+        var signer = new CmsSigner(SubjectIdentifierType.IssuerAndSerialNumber, _certificate!)
         {
             DigestAlgorithm = new Oid("2.16.840.1.101.3.4.2.1"), // SHA-256
             IncludeOption = X509IncludeOption.WholeChain,
@@ -227,38 +230,29 @@ public class AppleWalletService
         return ms.ToArray();
     }
 
-    /// <summary>
-    /// Gera um PNG mínimo 1x1 como placeholder.
-    /// Em produção, usar o logo real do negócio.
-    /// </summary>
-    private static byte[] GeneratePlaceholderIcon(int scale)
+    private byte[] LoadAsset(string filename)
     {
-        // PNG mínimo 1x1 pixel transparente
-        // Header (8) + IHDR chunk (25) + IDAT chunk (min) + IEND chunk (12)
-        var size = scale; // 1x1 or 2x2
-        return
-        [
-            // PNG signature
-            0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A,
-            // IHDR chunk
-            0x00, 0x00, 0x00, 0x0D, // length = 13
-            0x49, 0x48, 0x44, 0x52, // "IHDR"
-            0x00, 0x00, 0x00, (byte)size, // width
-            0x00, 0x00, 0x00, (byte)size, // height
-            0x08, 0x02,             // bit depth=8, color type=RGB
-            0x00, 0x00, 0x00,       // compression, filter, interlace
-            0x00, 0x00, 0x00, 0x00, // CRC placeholder (will be invalid but functional for dev)
-            // IDAT chunk (minimal valid deflate stream for 1x1 RGB)
-            0x00, 0x00, 0x00, 0x0C, // length = 12
-            0x49, 0x44, 0x41, 0x54, // "IDAT"
-            0x08, 0xD7, 0x63, 0x60, 0x60, 0x60, 0x00, 0x00,
-            0x00, 0x04, 0x00, 0x01, // deflate data
-            0x00, 0x00, 0x00, 0x00, // CRC placeholder
-            // IEND chunk
-            0x00, 0x00, 0x00, 0x00, // length = 0
-            0x49, 0x45, 0x4E, 0x44, // "IEND"
-            0xAE, 0x42, 0x60, 0x82, // CRC for IEND
-        ];
+        var path = Path.Combine(_assetsPath, filename);
+        return File.ReadAllBytes(path);
+    }
+
+    /// <summary>
+    /// Converte hex (#RRGGBB ou #RGB) para rgb(r, g, b).
+    /// Apple PassKit exige esse formato para cores.
+    /// </summary>
+    private static string HexToRgb(string hex)
+    {
+        if (string.IsNullOrEmpty(hex)) return "rgb(79, 70, 229)";
+
+        var h = hex.TrimStart('#');
+        if (h.Length == 3)
+            h = $"{h[0]}{h[0]}{h[1]}{h[1]}{h[2]}{h[2]}";
+        if (h.Length != 6) return "rgb(79, 70, 229)";
+
+        var r = Convert.ToInt32(h[..2], 16);
+        var g = Convert.ToInt32(h[2..4], 16);
+        var b = Convert.ToInt32(h[4..6], 16);
+        return $"rgb({r}, {g}, {b})";
     }
 
     private static string GenerateAuthToken()
