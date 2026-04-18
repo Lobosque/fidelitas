@@ -61,6 +61,9 @@ export function StepPreviewConfirmacao({
             corPrimaria={state.corPrimaria}
             logoUrl={state.logoPreviewUrl}
           />
+          <p className="mt-2 text-center text-xs text-gray-400">
+            Apenas ilustrativo — o QR code real será gerado ao criar a campanha.
+          </p>
         </div>
       </div>
 
