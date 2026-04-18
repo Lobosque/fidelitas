@@ -21,6 +21,8 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 // JWT Authentication — env var JWT_SECRET tem prioridade
 var jwtSecret = Environment.GetEnvironmentVariable("JWT_SECRET")
     ?? builder.Configuration["Jwt:Secret"]!;
+// Sobrescrever config para que TokenService use o mesmo secret
+builder.Configuration["Jwt:Secret"] = jwtSecret;
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {

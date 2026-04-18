@@ -62,7 +62,7 @@ export function StepPreviewConfirmacao({
             logoUrl={state.logoPreviewUrl}
           />
           <p className="mt-2 text-center text-xs text-gray-400">
-            Apenas ilustrativo — o QR code real será gerado ao criar a campanha.
+            * Apenas ilustrativo — o QR code real será gerado ao criar a campanha.
           </p>
         </div>
       </div>
@@ -73,7 +73,7 @@ export function StepPreviewConfirmacao({
           type="button"
           onClick={onBack}
           disabled={isSubmitting}
-          className="cursor-pointer rounded-md border border-gray-900 bg-gradient-to-b from-white to-gray-50 px-4 py-2 text-sm font-semibold text-gray-900 shadow-xs hover:from-gray-50 hover:to-gray-100 disabled:opacity-50"
+          className="cursor-pointer rounded-md bg-white px-3.5 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 hover:bg-gray-50 disabled:opacity-50"
         >
           Voltar
         </button>
