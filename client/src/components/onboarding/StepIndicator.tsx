@@ -14,7 +14,7 @@ interface StepIndicatorProps {
 export function StepIndicator({ currentStep }: StepIndicatorProps) {
   return (
     <nav aria-label="Progresso" className="mt-8">
-      <ol role="list" className="flex items-center">
+      <ol role="list" className="flex items-start">
         {STEPS.map((step, idx) => {
           const stepNum = idx + 1
           const isComplete = stepNum < currentStep
@@ -24,45 +24,45 @@ export function StepIndicator({ currentStep }: StepIndicatorProps) {
           return (
             <li
               key={step.name}
-              className={`flex flex-col items-center ${isLast ? 'relative' : 'relative flex-1'}`}
+              className={`relative flex items-start ${isLast ? '' : 'flex-1'}`}
             >
-              {/* Linha + círculo */}
-              <div className="flex w-full items-center">
-                {/* Círculo */}
+              {/* Coluna do círculo + label */}
+              <div className="flex flex-col items-center">
                 {isComplete ? (
-                  <div className="relative flex size-8 shrink-0 items-center justify-center rounded-full bg-primary">
+                  <div className="flex size-8 items-center justify-center rounded-full bg-primary">
                     <CheckIcon aria-hidden="true" className="size-5 text-white" />
                     <span className="sr-only">{step.name}</span>
                   </div>
                 ) : isCurrent ? (
                   <div
                     aria-current="step"
-                    className="relative flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-primary bg-white"
+                    className="flex size-8 items-center justify-center rounded-full border-2 border-primary bg-white"
                   >
                     <span aria-hidden="true" className="size-2.5 rounded-full bg-primary" />
                     <span className="sr-only">{step.name}</span>
                   </div>
                 ) : (
-                  <div className="relative flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-gray-300 bg-white">
+                  <div className="flex size-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white">
                     <span aria-hidden="true" className="size-2.5 rounded-full bg-transparent" />
                     <span className="sr-only">{step.name}</span>
                   </div>
                 )}
 
-                {/* Linha conectora */}
-                {!isLast && (
-                  <div className={`h-0.5 w-full ${isComplete ? 'bg-primary' : 'bg-gray-200'}`} />
-                )}
+                <span
+                  className={`mt-2 hidden text-xs font-medium sm:block ${
+                    stepNum <= currentStep ? 'text-primary' : 'text-gray-500'
+                  }`}
+                >
+                  {step.name}
+                </span>
               </div>
 
-              {/* Label centralizado sob o círculo */}
-              <span
-                className={`mt-2 hidden text-xs font-medium sm:block ${
-                  stepNum <= currentStep ? 'text-primary' : 'text-gray-500'
-                }`}
-              >
-                {step.name}
-              </span>
+              {/* Linha conectora — posicionada ao lado do círculo */}
+              {!isLast && (
+                <div className="mt-4 h-0.5 flex-1 self-start" style={{ backgroundColor: isComplete ? undefined : '#e5e7eb' }}>
+                  <div className={`h-full ${isComplete ? 'bg-primary' : ''}`} />
+                </div>
+              )}
             </li>
           )
         })}
