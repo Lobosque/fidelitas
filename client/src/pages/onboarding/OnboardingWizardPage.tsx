@@ -178,7 +178,7 @@ export function OnboardingWizardPage() {
               <button
                 type="button"
                 onClick={goBack}
-                className="cursor-pointer text-sm font-semibold text-gray-600 hover:text-gray-900"
+                className="cursor-pointer rounded-md border border-gray-900 bg-gradient-to-b from-white to-gray-50 px-4 py-2 text-sm font-semibold text-gray-900 shadow-xs hover:from-gray-50 hover:to-gray-100"
               >
                 Voltar
               </button>
