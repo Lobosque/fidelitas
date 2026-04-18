@@ -33,11 +33,15 @@ public class GoogleWalletService
             return;
         }
 
+        // Quando a private key vem de env var, as quebras de linha podem vir
+        // como '\n' literais — converter para newlines reais.
+        var privateKey = _options.ServiceAccountPrivateKey.Replace("\\n", "\n");
+
         _credential = new ServiceAccountCredential(
             new ServiceAccountCredential.Initializer(_options.ServiceAccountEmail)
             {
                 Scopes = ["https://www.googleapis.com/auth/wallet_object.issuer"],
-            }.FromPrivateKey(_options.ServiceAccountPrivateKey));
+            }.FromPrivateKey(privateKey));
 
         _walletService = new WalletobjectsService(new BaseClientService.Initializer
         {
