@@ -211,6 +211,9 @@ public class AppleWalletService
             DigestAlgorithm = new Oid("2.16.840.1.101.3.4.2.1"), // SHA-256
             IncludeOption = X509IncludeOption.EndCertOnly,
         };
+        // Adicionar signingTime dispara os signed attributes padrão do CMS
+        // (contentType, messageDigest, signingTime) — conformância RFC 5652.
+        signer.SignedAttributes.Add(new Pkcs9SigningTime());
         // Adicionar os CAs da Apple explicitamente — WholeChain não funciona
         // em container Linux onde esses CAs não estão no trust store do sistema.
         var caDir = Path.Combine(_assetsPath, "..", "apple-ca");
