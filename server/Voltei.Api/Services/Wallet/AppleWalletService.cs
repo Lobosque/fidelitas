@@ -209,8 +209,19 @@ public class AppleWalletService
         var signer = new CmsSigner(SubjectIdentifierType.IssuerAndSerialNumber, _certificate!)
         {
             DigestAlgorithm = new Oid("2.16.840.1.101.3.4.2.1"), // SHA-256
-            IncludeOption = X509IncludeOption.WholeChain,
+            IncludeOption = X509IncludeOption.EndCertOnly,
         };
+        // Adicionar os CAs da Apple explicitamente — WholeChain não funciona
+        // em container Linux onde esses CAs não estão no trust store do sistema.
+        var caDir = Path.Combine(_assetsPath, "..", "apple-ca");
+        foreach (var caFile in new[] { "AppleWWDRCAG4.cer", "AppleIncRootCertificate.cer" })
+        {
+            var caPath = Path.Combine(caDir, caFile);
+            if (File.Exists(caPath))
+            {
+                signer.Certificates.Add(X509CertificateLoader.LoadCertificateFromFile(caPath));
+            }
+        }
         signedCms.ComputeSignature(signer);
         return signedCms.Encode();
     }
