@@ -19,62 +19,54 @@ export function StepIndicator({ currentStep }: StepIndicatorProps) {
           const stepNum = idx + 1
           const isComplete = stepNum < currentStep
           const isCurrent = stepNum === currentStep
+          const isLast = idx === STEPS.length - 1
 
           return (
             <li
               key={step.name}
-              className={idx !== STEPS.length - 1 ? 'relative pr-8 sm:pr-20' : 'relative'}
+              className={`flex flex-col items-center ${isLast ? 'relative' : 'relative flex-1'}`}
             >
-              {isComplete ? (
-                <>
-                  <div aria-hidden="true" className="absolute inset-0 flex items-center">
-                    <div className="h-0.5 w-full bg-primary" />
-                  </div>
-                  <div className="relative flex size-8 items-center justify-center rounded-full bg-primary">
+              {/* Linha + círculo */}
+              <div className="flex w-full items-center">
+                {/* Círculo */}
+                {isComplete ? (
+                  <div className="relative flex size-8 shrink-0 items-center justify-center rounded-full bg-primary">
                     <CheckIcon aria-hidden="true" className="size-5 text-white" />
                     <span className="sr-only">{step.name}</span>
                   </div>
-                </>
-              ) : isCurrent ? (
-                <>
-                  <div aria-hidden="true" className="absolute inset-0 flex items-center">
-                    <div className="h-0.5 w-full bg-gray-200" />
-                  </div>
+                ) : isCurrent ? (
                   <div
                     aria-current="step"
-                    className="relative flex size-8 items-center justify-center rounded-full border-2 border-primary bg-white"
+                    className="relative flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-primary bg-white"
                   >
                     <span aria-hidden="true" className="size-2.5 rounded-full bg-primary" />
                     <span className="sr-only">{step.name}</span>
                   </div>
-                </>
-              ) : (
-                <>
-                  <div aria-hidden="true" className="absolute inset-0 flex items-center">
-                    <div className="h-0.5 w-full bg-gray-200" />
-                  </div>
-                  <div className="relative flex size-8 items-center justify-center rounded-full border-2 border-gray-300 bg-white">
+                ) : (
+                  <div className="relative flex size-8 shrink-0 items-center justify-center rounded-full border-2 border-gray-300 bg-white">
                     <span aria-hidden="true" className="size-2.5 rounded-full bg-transparent" />
                     <span className="sr-only">{step.name}</span>
                   </div>
-                </>
-              )}
+                )}
+
+                {/* Linha conectora */}
+                {!isLast && (
+                  <div className={`h-0.5 w-full ${isComplete ? 'bg-primary' : 'bg-gray-200'}`} />
+                )}
+              </div>
+
+              {/* Label centralizado sob o círculo */}
+              <span
+                className={`mt-2 hidden text-xs font-medium sm:block ${
+                  stepNum <= currentStep ? 'text-primary' : 'text-gray-500'
+                }`}
+              >
+                {step.name}
+              </span>
             </li>
           )
         })}
       </ol>
-      <div className="mt-2 hidden sm:flex">
-        {STEPS.map((step, idx) => (
-          <span
-            key={step.name}
-            className={`text-xs font-medium ${
-              idx !== STEPS.length - 1 ? 'pr-8 sm:pr-20' : ''
-            } ${idx + 1 <= currentStep ? 'text-primary' : 'text-gray-500'}`}
-          >
-            {step.name}
-          </span>
-        ))}
-      </div>
     </nav>
   )
 }
