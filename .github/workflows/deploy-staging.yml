@@ -36,6 +36,10 @@ jobs:
           dotnet-version: '10.0.x'
           dotnet-quality: 'preview'
 
+      - name: Generate dev Apple cert for tests
+        working-directory: server/certs
+        run: ./generate-dev-certs.sh
+
       - name: Test
         working-directory: server
         run: dotnet test
@@ -51,6 +55,11 @@ jobs:
       packages: write
     steps:
       - uses: actions/checkout@v4
+
+      - name: Decode Apple Wallet cert
+        run: |
+          mkdir -p server/certs
+          echo "${{ secrets.APPLE_WALLET_CERT_P12_BASE64 }}" | base64 -d > server/certs/pass-cert.p12
 
       - name: Log in to GHCR
         uses: docker/login-action@v3
@@ -76,11 +85,12 @@ jobs:
       KAMAL_REGISTRY_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
-      GOOGLE_WALLET_ISSUER_ID: ${{ secrets.GOOGLE_WALLET_ISSUER_ID }}
-      GOOGLE_WALLET_SA_EMAIL: ${{ secrets.GOOGLE_WALLET_SA_EMAIL }}
-      GOOGLE_WALLET_SA_KEY: ${{ secrets.GOOGLE_WALLET_SA_KEY }}
-      APPLE_WALLET_PASS_TYPE_ID: ${{ secrets.APPLE_WALLET_PASS_TYPE_ID }}
-      APPLE_WALLET_TEAM_ID: ${{ secrets.APPLE_WALLET_TEAM_ID }}
+      GoogleWallet__IssuerId: ${{ secrets.GOOGLE_WALLET_ISSUER_ID }}
+      GoogleWallet__ServiceAccountEmail: ${{ secrets.GOOGLE_WALLET_SA_EMAIL }}
+      GoogleWallet__ServiceAccountPrivateKey: ${{ secrets.GOOGLE_WALLET_SA_KEY }}
+      AppleWallet__PassTypeIdentifier: ${{ secrets.APPLE_WALLET_PASS_TYPE_ID }}
+      AppleWallet__TeamIdentifier: ${{ secrets.APPLE_WALLET_TEAM_ID }}
+      AppleWallet__CertificatePassword: ${{ secrets.APPLE_WALLET_CERT_PASSWORD }}
     steps:
       - uses: actions/checkout@v4
 
@@ -98,15 +108,17 @@ jobs:
       - name: Write secrets
         run: |
           mkdir -p .kamal
-          printf '%s\n' \
-            "KAMAL_REGISTRY_PASSWORD=$KAMAL_REGISTRY_PASSWORD" \
-            "DATABASE_URL=$DATABASE_URL" \
-            "JWT_SECRET=$JWT_SECRET" \
-            "GOOGLE_WALLET_ISSUER_ID=$GOOGLE_WALLET_ISSUER_ID" \
-            "GOOGLE_WALLET_SA_EMAIL=$GOOGLE_WALLET_SA_EMAIL" \
-            "GOOGLE_WALLET_SA_KEY=$GOOGLE_WALLET_SA_KEY" \
-            "APPLE_WALLET_PASS_TYPE_ID=$APPLE_WALLET_PASS_TYPE_ID" \
-            "APPLE_WALLET_TEAM_ID=$APPLE_WALLET_TEAM_ID" > .kamal/secrets
+          {
+            printf 'KAMAL_REGISTRY_PASSWORD=%s\n' "$KAMAL_REGISTRY_PASSWORD"
+            printf 'DATABASE_URL=%s\n' "$DATABASE_URL"
+            printf 'JWT_SECRET=%s\n' "$JWT_SECRET"
+            printf 'GoogleWallet__IssuerId=%s\n' "$GoogleWallet__IssuerId"
+            printf 'GoogleWallet__ServiceAccountEmail=%s\n' "$GoogleWallet__ServiceAccountEmail"
+            printf 'GoogleWallet__ServiceAccountPrivateKey=%s\n' "$GoogleWallet__ServiceAccountPrivateKey"
+            printf 'AppleWallet__PassTypeIdentifier=%s\n' "$AppleWallet__PassTypeIdentifier"
+            printf 'AppleWallet__TeamIdentifier=%s\n' "$AppleWallet__TeamIdentifier"
+            printf 'AppleWallet__CertificatePassword=%s\n' "$AppleWallet__CertificatePassword"
+          } > .kamal/secrets
 
       - name: Deploy
         run: kamal deploy --skip-push

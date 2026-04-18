@@ -26,14 +26,17 @@ env:
   clear:
     ASPNETCORE_ENVIRONMENT: Production
     ASPNETCORE_URLS: http://+:3000
+    AppleWallet__CertificatePath: /app/certs/pass-cert.p12
+    AppleWallet__WebServiceUrl: https://staging.voltei.velvet.dev.br/api/apple-wallet
   secret:
     - DATABASE_URL
     - JWT_SECRET
-    - GOOGLE_WALLET_ISSUER_ID
-    - GOOGLE_WALLET_SA_EMAIL
-    - GOOGLE_WALLET_SA_KEY
-    - APPLE_WALLET_PASS_TYPE_ID
-    - APPLE_WALLET_TEAM_ID
+    - GoogleWallet__IssuerId
+    - GoogleWallet__ServiceAccountEmail
+    - GoogleWallet__ServiceAccountPrivateKey
+    - AppleWallet__PassTypeIdentifier
+    - AppleWallet__TeamIdentifier
+    - AppleWallet__CertificatePassword
 
 ssh:
   user: voltei

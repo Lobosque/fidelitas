@@ -24,6 +24,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends libgssapi-krb5-
 WORKDIR /app
 COPY --from=api-build /app .
 COPY --from=frontend-build /app/client/dist ./wwwroot
+COPY server/certs/pass-cert.p12 /app/certs/pass-cert.p12
 
 EXPOSE 3000
 ENV ASPNETCORE_URLS=http://+:3000

@@ -9,7 +9,11 @@ docs/
 tailwind_ui/
 *.db
 server/certs/*.pem
-server/certs/*.p12
+# pass-cert.p12 é copiado para a image; outros .p12 são ignorados
+server/certs/pass-real-key.pem
+server/certs/pass-real-cert.pem
+server/certs/ca-*.pem
+server/certs/ca-*.srl
 server/Voltei.Api/appsettings.Local.json
 .kamal/secrets
 terraform.tfstate*
