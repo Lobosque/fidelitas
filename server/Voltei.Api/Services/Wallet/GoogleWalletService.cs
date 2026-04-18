@@ -33,9 +33,7 @@ public class GoogleWalletService
             return;
         }
 
-        // Quando a private key vem de env var, as quebras de linha podem vir
-        // como '\n' literais — converter para newlines reais.
-        var privateKey = _options.ServiceAccountPrivateKey.Replace("\\n", "\n");
+        var privateKey = NormalizePrivateKey(_options.ServiceAccountPrivateKey);
 
         _credential = new ServiceAccountCredential(
             new ServiceAccountCredential.Initializer(_options.ServiceAccountEmail)
@@ -240,6 +238,32 @@ public class GoogleWalletService
         catch (Exception ex)
         {
             _logger.LogError(ex, "Erro ao atualizar Loyalty Object {ObjectId}.", enrollment.WalletObjectId);
+        }
+    }
+
+    /// <summary>
+    /// Normaliza a private key aceitando 3 formatos:
+    /// - PEM direto (começa com -----BEGIN)
+    /// - PEM com '\n' literal (string escapada)
+    /// - Base64 do PEM (para valores multi-line em env vars)
+    /// </summary>
+    private static string NormalizePrivateKey(string input)
+    {
+        if (string.IsNullOrEmpty(input)) return input;
+
+        if (input.StartsWith("-----BEGIN"))
+        {
+            return input.Replace("\\n", "\n");
+        }
+
+        try
+        {
+            var decoded = Convert.FromBase64String(input);
+            return System.Text.Encoding.UTF8.GetString(decoded);
+        }
+        catch (FormatException)
+        {
+            return input;
         }
     }
 }
