@@ -6,6 +6,9 @@ import type { AuthUser } from '../../types'
 
 const MOCK_AUTH = false
 
+const IMAGE_LQIP =
+  'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABQODxIPDRQSEBIXFRQYHjIhHhwcHj0sLiQySUBMS0dARkVQWnNiUFVtVkVGZIhlbXd7gYKBTmCNl4x9lnN+gXz/2wBDARUXFx4aHjshITt8U0ZTfHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHx8fHz/wAARCAAPABQDASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAAQDBf/EABgQAAMBAQAAAAAAAAAAAAAAAAACAyEx/8QAFQEBAQAAAAAAAAAAAAAAAAAAAQL/xAAWEQEBAQAAAAAAAAAAAAAAAAAAARH/2gAMAwEAAhEDEQA/AOjapDWppdukNWJpg1dBKzaA0v/Z'
+
 export function LoginPage() {
   const auth = useAuth()
   const navigate = useNavigate()
@@ -15,6 +18,7 @@ export function LoginPage() {
   const [rememberMe, setRememberMe] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [imageLoaded, setImageLoaded] = useState(false)
 
   if (auth.user) {
     return <Navigate to="/dashboard" replace />
@@ -167,11 +171,25 @@ export function LoginPage() {
           </div>
         </div>
       </div>
-      <div className="relative hidden w-0 flex-1 lg:block">
+      <div className="relative hidden w-0 flex-1 overflow-hidden lg:block">
+        {/* LQIP: blur placeholder (inline base64, loads instantly) */}
         <img
           alt=""
-          src="/image.jpg"
-          className="absolute inset-0 size-full object-cover"
+          src={IMAGE_LQIP}
+          aria-hidden="true"
+          className="absolute inset-0 size-full scale-110 object-cover blur-xl"
+        />
+        {/* Full-res image with srcset */}
+        <img
+          alt=""
+          src="/image-1280.jpg"
+          srcSet="/image-1280.jpg 1280w, /image-1920.jpg 1920w"
+          sizes="50vw"
+          fetchPriority="high"
+          onLoad={() => setImageLoaded(true)}
+          className={`absolute inset-0 size-full object-cover transition-opacity duration-500 ${
+            imageLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
         />
       </div>
     </div>
