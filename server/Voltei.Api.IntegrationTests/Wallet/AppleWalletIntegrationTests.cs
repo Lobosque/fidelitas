@@ -193,7 +193,7 @@ public class AppleWalletIntegrationTests : IClassFixture<VolteiApiFactory>, IAsy
             await entryStream.CopyToAsync(entryMs);
 
             var actualHash = Convert.ToHexStringLower(
-                System.Security.Cryptography.SHA256.HashData(entryMs.ToArray()));
+                System.Security.Cryptography.SHA1.HashData(entryMs.ToArray()));
             actualHash.Should().Be(expectedHash, $"hash de '{filename}' deve bater com o manifest");
         }
     }

@@ -84,11 +84,11 @@ public class AppleWalletService
                 ["logo@2x.png"] = LoadAsset("logo@2x.png"),
             };
 
-            // Gerar manifest.json (SHA256 de cada arquivo)
+            // Gerar manifest.json (SHA1 de cada arquivo — obrigatório pela Apple)
             var manifest = new Dictionary<string, string>();
             foreach (var (name, data) in files)
             {
-                var hash = SHA256.HashData(data);
+                var hash = SHA1.HashData(data);
                 manifest[name] = Convert.ToHexStringLower(hash);
             }
             var manifestJson = JsonSerializer.Serialize(manifest);
