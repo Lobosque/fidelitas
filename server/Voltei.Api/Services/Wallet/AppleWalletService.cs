@@ -80,6 +80,7 @@ public class AppleWalletService
                 ["pass.json"] = Encoding.UTF8.GetBytes(passJson),
                 ["icon.png"] = LoadAsset("icon.png"),
                 ["icon@2x.png"] = LoadAsset("icon@2x.png"),
+                ["icon@3x.png"] = LoadAsset("icon@3x.png"),
                 ["logo.png"] = LoadAsset("logo.png"),
                 ["logo@2x.png"] = LoadAsset("logo@2x.png"),
             };
